@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="club.simplecreate.dao.CommentMapper" >
+  <resultMap id="BaseResultMap" type="club.simplecreate.pojo.Comment" >
+    <id column="comment_id" property="commentId" jdbcType="VARCHAR" />
+    <result column="comment_content" property="commentContent" jdbcType="VARCHAR" />
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="article_id" property="articleId" jdbcType="VARCHAR" />
+    <result column="sender_id" property="userId" jdbcType="VARCHAR" />
+    <result column="sender_nickname" property="senderNickname" jdbcType="VARCHAR" />
+    <result column="receiver_id" property="receiverId" jdbcType="VARCHAR" />
+    <result column="sender_avatar_path" property="senderAvatarPath" jdbcType="VARCHAR" />
+  </resultMap>
+<insert id="insertComment" parameterType="club.simplecreate.pojo.Comment">
+  insert into T_COMMENT(comment_id,publish_time,article_id,comment_content,sender_id,sender_nickname,sender_avatar_path,receiver_id)
+  values(#{commentId},#{publishTime},#{articleId},#{commentContent},#{userId},#{senderNickname},#{senderAvatarPath},#{receiverId})
+</insert>
+</mapper>
