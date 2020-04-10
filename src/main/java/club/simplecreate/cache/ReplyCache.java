@@ -15,7 +15,5 @@ public class ReplyCache {
         //将该回复加入对应评论 list中,因为回复不可删，所以直接存入回复对象，而不是存入id
         redisTemplate.opsForList().leftPush("COMMENT_REPLIES:"+reply.getCommentId(),reply);
         //回复没有通知
-
-
     }
 }

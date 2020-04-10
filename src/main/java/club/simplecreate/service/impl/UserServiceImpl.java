@@ -2,8 +2,7 @@ package club.simplecreate.service.impl;
 
 import club.simplecreate.cache.*;
 import club.simplecreate.dao.UserMapper;
-import club.simplecreate.pojo.Favorite;
-import club.simplecreate.pojo.Follow;
+import club.simplecreate.pojo.Article;
 import club.simplecreate.pojo.User;
 import club.simplecreate.service.UserService;
 import club.simplecreate.utils.DateUtil;
@@ -11,9 +10,7 @@ import club.simplecreate.utils.WxUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -32,45 +29,43 @@ public class UserServiceImpl implements UserService {
     FavoriteCache favoriteCache;
     @Override
     public User wxLogin(User user) {
-        long token;
+        String token;
         //首先根据code解析openid
-        System.out.println(user.getCode());
         String openid=WxUtils.resolveCode(user.getCode());
-        System.out.println(openid);
         user.setOpenid(openid);
         //设置这次登录时间
-        user.setLastLoginTime(new Date());
         //然后利用openid判断该用户在缓存中是否存在
         User userResultFromCache=userCache.selectUserByOpenid(openid);
-        if(userResultFromCache==null)
-        {
+        if(userResultFromCache==null) {
             //不在则判断是否在数据库中,不在则加入并建立缓存
             User userResultFromDb=userMapper.selectUserByOpenid(openid);
             if(userResultFromDb==null) {
                 user.setOpenid(openid);
                 if(userMapper.insertUser(user)==1){
-                    //加入成功，建立缓存
+                    //新用户加入成功，建立缓存
                     userCache.insertUser(user);
+                    //设置当前时间为其刷新时间
+                    userCache.setNewLastReloadTime(openid);
                 }else{
                     //加入失败
                     return null;
                 }
             }else{
-                //在则取出数据库中的最后登录时间
-                user.setLastLoginTime(userResultFromDb.getLastLoginTime());
+                //重建缓存
+                userCache.insertUser(userResultFromDb);
             }
-            //不在建立缓存
-
-        }else{
-            //在则更新缓存
-            userCache.insertUser(user);
-            //取出上次登录时间返回
-            user.setLastLoginTime(userResultFromCache.getLastLoginTime());
         }
-        //生成token,加入redis key为token,value为用户openid,一小时后过期
-        token=System.currentTimeMillis()- DateUtil.millis;
-
-        tokenCache.setToken(token+"",openid);
+//        else {
+//            //如果用户信息发生变化
+//            if(!userResultFromCache.equals(user)){
+//                //更新缓存
+//                userCache.insertUser(user);
+//                //更新数据库
+//                userMapper.updateUser(user);
+//            }
+//        }//生成token,加入redis key为token,value为用户openid,一小时后过期
+        token=UUID.randomUUID().toString();
+        tokenCache.setToken(token,openid);
         //返回token和用户更完整信息
         user.setToken(token);
         return user;
@@ -84,11 +79,12 @@ public class UserServiceImpl implements UserService {
         //不存在则失败
         if(openid==null) {
             res.put("islogin", false);
-
         }
         else {
+            //延迟存活时间
+            tokenCache.setTokenTTL(token);
             res.put("islogin",true);
-           res.put("userInfo",userCache.selectUserByOpenid(openid));
+            res.put("userInfo",userCache.selectUserByOpenid(openid));
         }
         return res;
     }
@@ -98,6 +94,7 @@ public class UserServiceImpl implements UserService {
         User userResultFromCache=userCache.selectUserByOpenid(openId);
         if(userResultFromCache==null) {
             User userResultFromDb = userMapper.selectUserByOpenid(openId);
+            userCache.insertUser(userResultFromDb);
             return userResultFromDb;
         }
         return userResultFromCache;
@@ -117,17 +114,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isLike(String openId, String articleId) {
-        return userCache.isLike(openId,articleId);
+        return likeCache.isLike(openId,articleId);
     }
 
     @Override
     public boolean isFavorite(String openId, String articleId) {
-        return userCache.isFavorite(openId,articleId);
+        return favoriteCache.isFavorite(openId,articleId);
     }
 
     @Override
     public boolean isFollow(String openId, String userId) {
-        return userCache.isFollow(openId,userId);
+        return followCache.isFollow(openId,userId);
     }
 
     @Override
@@ -146,4 +143,38 @@ public class UserServiceImpl implements UserService {
     public boolean favorite(String openId, String articleId) {
         return favoriteCache.favorite(openId,articleId);
     }
+
+    @Override
+    public Map<String, Object> getFollowList(String openId, int page) {
+        Map<String, Object> res=new HashMap<>(2);
+        res.put("totalNums",userCache.getFollowListSize(openId));
+        Set<Object> userIds=userCache.getFollowList(openId,page);
+        List<User> users=getUsers(userIds);
+        res.put("rows",users);
+        return res;
+    }
+
+    @Override
+    public long getActionSize(String openId) {
+        //先删除之前关注的人作品列表合集
+        userCache.deleteActionSet(openId);
+        //再重新合并关注的人作品列表
+        userCache.unionActionSet(openId);
+        //取出该上一次刷新时间
+        long start=userCache.getLastReloadTime(openId);
+        //该时间内到现在有多少作品即为新动态
+        return  userCache.getActionSize(openId,start,System.currentTimeMillis());
+    }
+
+
+
+    private List<User> getUsers(Collection<Object> userIds){
+        List<User> users=new ArrayList<>();
+        for(Object userId:userIds) {
+            users.add(selectUserById((String) userId));
+        }
+        return users;
+    }
+
+
 }

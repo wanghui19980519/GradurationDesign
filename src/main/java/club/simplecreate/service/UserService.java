@@ -26,4 +26,10 @@ public interface UserService {
     boolean like(User user,String authorId, String articleId, String title);
 
     boolean favorite(String openId, String articleId);
+
+    Map<String, Object> getFollowList(String openId, int page);
+
+    long getActionSize(String openId);
+
+
 }

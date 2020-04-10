@@ -8,23 +8,39 @@ import org.springframework.stereotype.Component;
 public class FavoriteCache {
     @Autowired
     private RedisTemplate<Object,Object> redisTemplate;
-
-    public boolean favorite(String openId, String articleId) {
+    public boolean isFavorite(String openId, String articleId) {
+        //判断用户的收藏列表中是否存在该articleId
         long res;
-        //判断该是否已收藏
-        if(redisTemplate.opsForSet().isMember("FAVORITESET:"+openId,articleId)){
+        try{
+          res=redisTemplate.opsForZSet().rank("FAVORITESET:"+openId,articleId);
+        }catch (Exception e){
+            return false;
+        }
+        if(res>=0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public boolean favorite(String openId, String articleId) {
+        if(isFavorite(openId,articleId)){
             //已收藏则取消关注
-            res=redisTemplate.opsForSet().remove("FAVORITESET:"+openId,articleId);
+            long res=redisTemplate.opsForZSet().remove("FAVORITESET:"+openId,articleId);
+            if (res==1){
+                return true;
+            }else{
+                return false;
+            }
         }
         else{
             //未收藏
             //将该文章加入用户的收藏列表
-            res=redisTemplate.opsForSet().add("FAVORITESET:"+openId,articleId);
-        }
-        if(res==1){
-            return true;
-        }else{
-            return false;
+            boolean res=redisTemplate.opsForZSet().add("FAVORITESET:"+openId,articleId,System.currentTimeMillis());
+            if(res){
+                return true;
+            }else {
+                return false;
+            }
         }
     }
 }

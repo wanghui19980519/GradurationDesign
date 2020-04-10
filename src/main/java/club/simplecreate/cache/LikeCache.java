@@ -10,17 +10,23 @@ import org.springframework.stereotype.Component;
 public class LikeCache {
     @Autowired
     private RedisTemplate<Object,Object> redisTemplate;
+
+    public boolean isLike(String openId, String articleId) {
+        //判断文章的点赞列表中是否存在该openidId
+        return redisTemplate.opsForSet().isMember("ARTICLE_LIKES:"+articleId,openId);
+    }
+
     public boolean like(User user, String authorId,String articleId, String title) {
         long res;
         //判断该是否已点赞
-        if(redisTemplate.opsForSet().isMember("LIKESET:"+user.getOpenid(),articleId)){
+        if(isLike(user.getOpenid(),articleId)){
             //已关注则取消关注
-            res=redisTemplate.opsForSet().remove("LIKESET:"+user.getOpenid(),articleId);
+            res=redisTemplate.opsForSet().remove("ARTICLE_LIKES:"+articleId,user.getOpenid());
         }
         else{
             //未关注
             //将该用户加入被关注用户的粉丝列表
-            res=redisTemplate.opsForSet().add("LIKESET:"+user.getOpenid(),articleId);
+            res=redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
             //关注信息加入信箱，未读消息加1
             redisTemplate.opsForValue().increment("NEWMESSAGENUMS:"+authorId);
             LikeMessage message=new LikeMessage(user,articleId,title);

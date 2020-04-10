@@ -10,27 +10,47 @@ import org.springframework.stereotype.Component;
 public class FollowCache {
     @Autowired
     private RedisTemplate<Object,Object> redisTemplate;
-
-    public boolean follow(User user, String authorId) {
+    public boolean isFollow(String openId, String userId) {
+        //判断作者的关注列表中是否存在该操作用户
+        //判断用户的收藏列表中是否存在该articleId
         long res;
-        //判断该是否已关注
-        if(redisTemplate.opsForSet().isMember("FOLLOWSET:"+authorId,user.getOpenid())){
-            //已关注则取消关注
-            res=redisTemplate.opsForSet().remove("FOLLOWSET:"+authorId,user.getOpenid());
+        try {
+             res=redisTemplate.opsForZSet().rank("FOLLOWSET:" + openId, userId);
+        }catch (Exception e){
+            return false;
         }
-        else{
-            //未关注
-            //将该用户加入被关注用户的粉丝列表
-            res=redisTemplate.opsForSet().add("FOLLOWSET:"+authorId,user.getOpenid());
-            //关注信息加入信箱，未读消息加1
-            redisTemplate.opsForValue().increment("NEWMESSAGENUMS:"+authorId);
-            FollowMessage message=new FollowMessage(user);
-            redisTemplate.opsForList().rightPush("NEWFOLLOWMESSAGES:"+authorId,message);
-        }
-        if(res==1){
+        if(res>=0){
             return true;
         }else{
             return false;
         }
+    }
+    public boolean follow(User user, String authorId) {
+        //判断该是否已关注
+        if(isFollow(user.getOpenid(),authorId)){
+            //已关注则取消关注
+            long res1=redisTemplate.opsForZSet().remove("FOLLOWSET:"+authorId,user.getOpenid());
+            if(res1==1){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        else{
+            //未关注
+            //将该用户加入被关注用户的粉丝列表
+            boolean res2=redisTemplate.opsForZSet().add("FOLLOWSET:"+authorId,user.getOpenid(),System.currentTimeMillis());
+            //关注信息加入信箱，未读消息加1
+            if(res2){
+                redisTemplate.opsForValue().increment("NEWMESSAGENUMS:"+authorId);
+                FollowMessage message=new FollowMessage(user);
+                redisTemplate.opsForList().rightPush("NEWFOLLOWMESSAGES:"+authorId,message);
+                return true;
+            }else {
+                return false;
+            }
+
+        }
+
     }
 }

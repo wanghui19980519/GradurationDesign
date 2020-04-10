@@ -83,7 +83,6 @@ public class Ansj {
     private static List<Term> getTerms(String str){
         Result result = ToAnalysis.parse(str);
         //分词结果的一个封装，主要是一个List<Term>的terms
-        System.out.println(result.getTerms());
         //拿到terms
         return  result.getTerms();
     }

@@ -4,19 +4,25 @@
   <resultMap id="BaseResultMap" type="club.simplecreate.pojo.User" >
     <id column="openid" property="openid" jdbcType="VARCHAR" />
     <result column="nickname" property="nickname" jdbcType="VARCHAR" />
-    <result column="age" property="age" jdbcType="INTEGER" />
     <result column="gender" property="gender" jdbcType="INTEGER" />
     <result column="avatar_path" property="avatarPath" jdbcType="VARCHAR" />
     <result column="province" property="province" jdbcType="VARCHAR" />
     <result column="city" property="city" jdbcType="VARCHAR" />
-    <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <insert id="insertUser" parameterType="club.simplecreate.pojo.User">
-    insert into T_USER(openid,nickname,age,gender,avatar_path,province,city,last_login_time)
-    VALUES(#{openid},#{nickname},#{age},#{gender},#{avatarPath},#{province},#{city},#{lastLoginTime})
+    insert into T_USER(openid,nickname,gender,avatar_path,province,city)
+    VALUES(#{openid},#{nickname},#{gender},#{avatarPath},#{province},#{city})
   </insert>
   <select id="selectUserByOpenid" parameterType="string" resultMap="BaseResultMap">
     select * from T_USER where openid=#{value}
   </select>
-
+  <update id="updateUser" parameterType="club.simplecreate.pojo.User">
+    update T_USER
+    set nickname=#{nickname},
+    gender=#{gender},
+    avatar_path=#{avatarPath},
+    province=#{province},
+    city=#{city}
+    where openid=#{openid}
+  </update>
 </mapper>

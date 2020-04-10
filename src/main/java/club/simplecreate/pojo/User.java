@@ -1,30 +1,13 @@
 package club.simplecreate.pojo;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class User {
 
     private String openid;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "openid='" + openid + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", age=" + age +
-                ", gender=" + gender +
-                ", avatarPath='" + avatarPath + '\'' +
-                ", province='" + province + '\'' +
-                ", city='" + city + '\'' +
-                ", lastLoginTime=" + lastLoginTime +
-                ", code='" + code + '\'' +
-                ", token=" + token +
-                '}';
-    }
-
     private String nickname;
-
-    private Integer age;
 
     private Integer gender;
 
@@ -34,17 +17,15 @@ public class User {
 
     private String city;
 
-    private Date lastLoginTime;
-
     private String code;
 
-    private Long token;
+    private String token;
 
-    public Long getToken() {
+    public String getToken() {
         return token;
     }
 
-    public void setToken(Long token) {
+    public void setToken(String token) {
         this.token = token;
     }
 
@@ -70,14 +51,6 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname == null ? null : nickname.trim();
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
     }
 
     public Integer getGender() {
@@ -112,11 +85,4 @@ public class User {
         this.city = city == null ? null : city.trim();
     }
 
-    public Date getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(Date lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
 }

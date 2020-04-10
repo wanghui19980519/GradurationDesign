@@ -5,5 +5,7 @@
     <id column="type_id" property="typeId" jdbcType="INTEGER" />
     <result column="type_content" property="typeContent" jdbcType="VARCHAR" />
   </resultMap>
-
+<select id="getTypeList" resultMap="BaseResultMap">
+  select * from T_TYPE;
+</select>
 </mapper>

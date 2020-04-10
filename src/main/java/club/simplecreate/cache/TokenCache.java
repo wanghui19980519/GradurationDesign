@@ -18,4 +18,8 @@ public class TokenCache {
     public String getToken(String token){
         return (String) redisTemplate.opsForValue().get("TOKEN:"+token);
     }
+    public void setTokenTTL(String token){
+        redisTemplate.expire("TOKEN:"+token,1, TimeUnit.HOURS);
+    }
+
 }

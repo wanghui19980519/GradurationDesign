@@ -29,9 +29,20 @@ public class ArticleController {
     @Autowired
     ReplyService replyService;
     @ResponseBody
+    @RequestMapping("/getTopNList")
+    public Map<String,Object> getTopNList(int page){
+        return articleService.getTopNList(page);
+    }
+    @ResponseBody
+    @RequestMapping("/getNewNList")
+    public Map<String,Object> getNewNList(int page){
+        return articleService.getNewNList(page);
+    }
+    @ResponseBody
     @RequestMapping("/insertArticle")
     public Map<String,String> insertArticle(HttpServletRequest request,Article article){
-        article.setUserId((String)request.getAttribute("userId"));
+        String openId=(String)request.getAttribute("userId");
+        article.setUserId(openId);
         article.setPublishTime(new Date());
         //设置id
         article.setArticleId(UUID.randomUUID().toString());
@@ -53,6 +64,8 @@ public class ArticleController {
         Map<String,Object> res=new HashMap<>();
         //任何人都可以访问文章，所以不需要拦截
         Article article=articleService.selectArticleById(articleId);
+        //文章浏览数加一
+        articleService.increaseVisitNums(articleId);
         res.put("article",article);
         return res;
     }
@@ -65,8 +78,6 @@ public class ArticleController {
         userService.insertArticleKeyWord(openId,articleId);
         //将该文章加入该用户的浏览历史
         userService.insertHistory(openId,articleId);
-        //文章浏览数加一
-        articleService.increaseVisitNums(articleId);
         //topN热度加1
         articleService.increaseScore(articleId);
     }
