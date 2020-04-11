@@ -28,9 +28,9 @@ public class LikeCache {
             //将该用户加入被关注用户的粉丝列表
             res=redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
             //关注信息加入信箱，未读消息加1
-            redisTemplate.opsForValue().increment("NEWMESSAGENUMS:"+authorId);
+            redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
             LikeMessage message=new LikeMessage(user,articleId,title);
-            redisTemplate.opsForList().rightPush("NEWLIKEMESSAGES:"+authorId,message);
+            redisTemplate.opsForList().rightPush("NEW_LIKE_MESSAGES:"+authorId,message);
         }
         if(res==1){
             return true;

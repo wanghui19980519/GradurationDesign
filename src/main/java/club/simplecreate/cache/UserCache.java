@@ -43,19 +43,19 @@ public class UserCache{
     }
 
     public Set<Object> getFavoriteList(String openId, int page) {
-        return redisTemplate.opsForZSet().reverseRange("FAVORITESET:"+openId,(page-1)*6,page*6-1);
+        return redisTemplate.opsForZSet().reverseRange("FAVORITE_SET:"+openId,(page-1)*6,page*6-1);
     }
 
     public long getFavoriteListSize(String openId) {
-        return redisTemplate.opsForZSet().size("FAVORITESET:"+openId);
+        return redisTemplate.opsForZSet().size("FAVORITE_SET:"+openId);
     }
 
     public long getFollowListSize(String openId) {
-        return redisTemplate.opsForZSet().size("FOLLOWSET:"+openId);
+        return redisTemplate.opsForZSet().size("FOLLOW_SET:"+openId);
     }
 
     public Set<Object> getFollowList(String openId, int page) {
-        return redisTemplate.opsForZSet().reverseRange("FOLLOWSET:"+openId,(page-1)*10,page*10-1);
+        return redisTemplate.opsForZSet().reverseRange("FOLLOW_SET:"+openId,(page-1)*10,page*10-1);
     }
 
     public void deleteActionSet(String openId) {
@@ -64,7 +64,7 @@ public class UserCache{
 
     public void unionActionSet(String openId) {
         //获得关注列表
-        Set<Object> followSet=redisTemplate.opsForZSet().range("FOLLOWSET:"+openId,0,-1);
+        Set<Object> followSet=redisTemplate.opsForZSet().range("FOLLOW_SET:"+openId,0,-1);
         //产生动态列表
         for(Object followId:followSet){
             redisTemplate.opsForZSet().unionAndStore("ACTION_SET:"+openId,"USER_ARTICLES:"+followId,"ACTION_SET:"+openId);

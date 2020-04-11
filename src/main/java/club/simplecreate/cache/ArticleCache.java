@@ -32,7 +32,7 @@ public class ArticleCache {
         //将该文章加入该作者的作品列表中Zset，score为时间
         redisTemplate.opsForZSet().add("USER_ARTICLES:"+article.getUserId(),article.getArticleId(),System.currentTimeMillis());
         //建立访问量缓存
-        redisTemplate.opsForValue().set("VISITNUMS:"+article.getArticleId(),0);
+        redisTemplate.opsForValue().set("VISIT_NUMS:"+article.getArticleId(),0);
 
     }
     public void deleteArticle(Integer articleId,String userId,int typeId) {
@@ -69,7 +69,7 @@ public class ArticleCache {
     @Async
     public void increaseVisits(String articleId) {
         //添加访问量
-        redisTemplate.opsForValue().increment("VISITNUMS:"+articleId);
+        redisTemplate.opsForValue().increment("VISIT_NUMS:"+articleId);
     }
     public Article selectArticleById(String articleId){
         //从缓存中获取该文章

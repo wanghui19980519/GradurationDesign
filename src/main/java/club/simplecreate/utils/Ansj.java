@@ -10,16 +10,9 @@ import java.util.*;
  * 分词工具类
  */
 public class Ansj {
-    /**
-     *
-     * @param title
-     * @param tag
-     * @param summary
-     * @return 返回分词结果及其对应的权重
-     */
     private static  Set<String> expectedNature = new HashSet<String>() {{
         add("en");add("n");add("ns");add("nr");add("nt");add("nz");add("nw");add("nl");
-        add("v");add("vn");add("userDefine");
+        add("vn");
     }
     };
     public static  Map<String,Double>  split(String title,String tag,String summary){
