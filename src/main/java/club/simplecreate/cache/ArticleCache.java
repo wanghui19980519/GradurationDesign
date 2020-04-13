@@ -24,10 +24,15 @@ public class ArticleCache {
         //将该文章加入topN列表Zset
         redisTemplate.opsForZSet().add("TOPN",article.getArticleId(),0);
         //将该文章加入newN列表List
-        redisTemplate.opsForList().rightPush("NEWN",article.getArticleId());
+        redisTemplate.opsForList().leftPush("NEWN",article.getArticleId());
         //将该文章加入该类别列表Zset
         redisTemplate.opsForZSet().add("TYPE_TOPN:"+article.getTypeId(),article.getArticleId(),0);
         //为该文章建立缓存
+        //切割出第一张图片
+        if(article.getContainImgpath()!=null) {
+            String containImg = article.getContainImgpath().split(",")[0];
+            article.setContainImgpath(containImg);
+        }
         redisTemplate.opsForValue().set("ARTICLE:"+article.getArticleId(),article);
         //将该文章加入该作者的作品列表中Zset，score为时间
         redisTemplate.opsForZSet().add("USER_ARTICLES:"+article.getUserId(),article.getArticleId(),System.currentTimeMillis());

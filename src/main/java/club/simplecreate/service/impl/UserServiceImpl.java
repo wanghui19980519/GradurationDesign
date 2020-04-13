@@ -2,10 +2,8 @@ package club.simplecreate.service.impl;
 
 import club.simplecreate.cache.*;
 import club.simplecreate.dao.UserMapper;
-import club.simplecreate.pojo.Article;
 import club.simplecreate.pojo.User;
 import club.simplecreate.service.UserService;
-import club.simplecreate.utils.DateUtil;
 import club.simplecreate.utils.WxUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -145,13 +143,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> getFollowList(String openId, int page) {
-        Map<String, Object> res=new HashMap<>(2);
-        res.put("totalNums",userCache.getFollowListSize(openId));
-        Set<Object> userIds=userCache.getFollowList(openId,page);
-        List<User> users=getUsers(userIds);
-        res.put("rows",users);
-        return res;
+    public List<User> getFollowList(String openId) {
+        return getUsers(userCache.getFollowList(openId));
     }
 
     @Override

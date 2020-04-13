@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/user")
@@ -46,9 +48,9 @@ public class UserController {
     }
     @ResponseBody
     @RequestMapping("/getFollowList")
-    public Map<String,Object> getFollowList(HttpServletRequest request,int page){
+    public List<User> getFollowList(HttpServletRequest request){
         String openId=(String)request.getAttribute("userId");
-        return userService.getFollowList(openId,page);
+        return userService.getFollowList(openId);
     }
     @ResponseBody
     @RequestMapping("/getActionSize")
@@ -62,5 +64,10 @@ public class UserController {
         String openId=(String)request.getAttribute("userId");
         return articleService.getActionList(openId,page);
     }
-
+    @ResponseBody
+    @RequestMapping("/getWorkList")
+    public Map<String,Object> getWorkList(HttpServletRequest request,int page){
+        String openId=(String)request.getAttribute("userId");
+        return articleService.getWorkList(openId,page);
+    }
 }

@@ -22,4 +22,6 @@ public interface ArticleService {
     Map<String, Object> getFavoriteList(String openId, int page);
 
     Map<String, Object> getActionList(String openId,int page);
+
+    Map<String, Object> getWorkList(String openId, int page);
 }

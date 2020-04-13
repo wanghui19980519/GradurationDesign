@@ -2,6 +2,7 @@ package club.simplecreate.service;
 
 import club.simplecreate.pojo.User;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserService {
@@ -27,7 +28,7 @@ public interface UserService {
 
     boolean favorite(String openId, String articleId);
 
-    Map<String, Object> getFollowList(String openId, int page);
+    List<User> getFollowList(String openId);
 
     long getActionSize(String openId);
 

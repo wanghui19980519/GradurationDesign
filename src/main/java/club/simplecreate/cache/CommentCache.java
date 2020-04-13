@@ -1,7 +1,7 @@
 package club.simplecreate.cache;
 
-import club.simplecreate.message.CommentMessage;
 import club.simplecreate.pojo.Comment;
+import club.simplecreate.pojo.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -21,8 +21,8 @@ public class CommentCache {
         //同时该作者的新消息数量加一，
         redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+comment.getReceiverId());
         //并且将评论通知加入其通知列表
-        CommentMessage message=new CommentMessage(comment);
-        redisTemplate.opsForList().leftPush("COMMENT_MESSAGE:"+comment.getReceiverId(),message);
+        Message message=new Message(comment);
+        redisTemplate.opsForList().leftPush("NEW_COMMENT_MESSAGE:"+comment.getReceiverId(),message);
     }
 
     public List<Comment> getCommentList(String articleId) {

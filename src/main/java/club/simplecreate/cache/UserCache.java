@@ -50,12 +50,8 @@ public class UserCache{
         return redisTemplate.opsForZSet().size("FAVORITE_SET:"+openId);
     }
 
-    public long getFollowListSize(String openId) {
-        return redisTemplate.opsForZSet().size("FOLLOW_SET:"+openId);
-    }
-
-    public Set<Object> getFollowList(String openId, int page) {
-        return redisTemplate.opsForZSet().reverseRange("FOLLOW_SET:"+openId,(page-1)*10,page*10-1);
+    public Set<Object> getFollowList(String openId) {
+        return redisTemplate.opsForZSet().reverseRange("FOLLOW_SET:"+openId,0,-1);
     }
 
     public void deleteActionSet(String openId) {
@@ -95,5 +91,13 @@ public class UserCache{
 
     public long getActionListSize(String openId) {
         return redisTemplate.opsForZSet().size("ACTION_SET:"+openId);
+    }
+
+    public long getWorkListSize(String openId) {
+        return redisTemplate.opsForZSet().size("USER_ARTICLES:"+openId);
+    }
+
+    public Set<Object> getWorkList(String openId, int page) {
+        return redisTemplate.opsForZSet().reverseRange("USER_ARTICLES:"+openId,(page-1)*6,page*6-1);
     }
 }

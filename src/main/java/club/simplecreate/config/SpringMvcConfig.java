@@ -23,6 +23,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/user/wxLogin","/user/checkLogin",
                         "/article/selectArticleById", "/article/getCommentList",
                         "/comment/getReplyList","/type/getTypeList",
-                        "/article/getTopNList","/article/getNewNList");
+                        "/article/getTopNList","/article/getNewNList",
+                        "/cos/getCosSecret","/search","/getHotKeyWord");
     }
 }

@@ -3,10 +3,12 @@ package club.simplecreate.interceptor;
 import club.simplecreate.cache.TokenCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.function.ServerResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {
@@ -22,6 +24,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         //不存在则失败
         if(openid==null) {
             //返回错误信息
+            PrintWriter pw = httpServletResponse.getWriter();
+            pw.write("{status:100}");
             return false;
         }
         //存在则通过,并且将openid加入request

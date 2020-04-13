@@ -66,6 +66,8 @@ public class WebSocket {
     }
 
     public void sendMessage(int newMessageNum){
-        session.getAsyncRemote().sendObject(newMessageNum);
+        if(session.isOpen()) {
+            session.getAsyncRemote().sendObject(newMessageNum);
+        }
     }
 }

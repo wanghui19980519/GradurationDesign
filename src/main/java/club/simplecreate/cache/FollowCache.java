@@ -1,6 +1,6 @@
 package club.simplecreate.cache;
 
-import club.simplecreate.message.FollowMessage;
+import club.simplecreate.pojo.Message;
 import club.simplecreate.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -43,7 +43,7 @@ public class FollowCache {
             //关注信息加入信箱，未读消息加1
             if(res2){
                 redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
-                FollowMessage message=new FollowMessage(user);
+                Message message=new Message(user);
                 redisTemplate.opsForList().rightPush("NEW_FOLLOW_MESSAGES:"+authorId,message);
                 return true;
             }else {

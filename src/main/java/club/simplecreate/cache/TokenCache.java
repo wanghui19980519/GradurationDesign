@@ -13,13 +13,13 @@ public class TokenCache {
 
     public void setToken(String token,String openid){
         redisTemplate.opsForValue().set("TOKEN:"+token,openid);
-        redisTemplate.expire("TOKEN:"+token,1, TimeUnit.HOURS);
+        redisTemplate.expire("TOKEN:"+token,1, TimeUnit.DAYS);
     }
     public String getToken(String token){
         return (String) redisTemplate.opsForValue().get("TOKEN:"+token);
     }
     public void setTokenTTL(String token){
-        redisTemplate.expire("TOKEN:"+token,1, TimeUnit.HOURS);
+        redisTemplate.expire("TOKEN:"+token,1, TimeUnit.DAYS);
     }
 
 }

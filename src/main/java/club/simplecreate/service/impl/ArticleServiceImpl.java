@@ -57,9 +57,8 @@ public class ArticleServiceImpl implements ArticleService {
         res.setAuthor(userService.selectUserById(res.getUserId()));
         //获得其访问量，评论数，点赞数
         res.setVisitNums(articleCache.getVisitNums(articleId));
-        res.setCommentNums(articleCache.getCommentNums(articleId));
-        res.setLikeNums(articleCache.getLikeNums(articleId));
-
+        //res.setCommentNums(articleCache.getCommentNums(articleId));
+        //res.setLikeNums(articleCache.getLikeNums(articleId));
         return res;
     }
 
@@ -123,6 +122,17 @@ public class ArticleServiceImpl implements ArticleService {
         long pages=getPages(userCache.getActionListSize(openId));
         res.put("totalPages",pages);
         Set<Object> articleIds=userCache.getActionList(openId,page);
+        List<Article> articles=getArticles(articleIds);
+        res.put("rows",articles);
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getWorkList(String openId, int page) {
+        Map<String, Object> res=new HashMap<>(2);
+        long pages=getPages(userCache.getWorkListSize(openId));
+        res.put("totalPages",pages);
+        Set<Object> articleIds=userCache.getWorkList(openId,page);
         List<Article> articles=getArticles(articleIds);
         res.put("rows",articles);
         return res;

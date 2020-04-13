@@ -1,6 +1,6 @@
 package club.simplecreate.cache;
 
-import club.simplecreate.message.LikeMessage;
+import club.simplecreate.pojo.Message;
 import club.simplecreate.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,7 +29,7 @@ public class LikeCache {
             res=redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
             //关注信息加入信箱，未读消息加1
             redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
-            LikeMessage message=new LikeMessage(user,articleId,title);
+            Message message=new Message(user,articleId,title);
             redisTemplate.opsForList().rightPush("NEW_LIKE_MESSAGES:"+authorId,message);
         }
         if(res==1){
