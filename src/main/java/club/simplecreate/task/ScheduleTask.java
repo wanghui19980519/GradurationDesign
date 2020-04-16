@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ScheduleTask {
@@ -14,7 +15,7 @@ public class ScheduleTask {
     private RedisTemplate<Object,Object> redisTemplate;
 
     /**
-     * 每隔1分钟执行一次任务
+     * 每隔1分钟执行一次任务，循环为在线人数查看消息队列中有无新消息
      */
     @Scheduled(cron = "0 */1 * * * ?")
     public void sendMessage(){
@@ -29,5 +30,37 @@ public class ScheduleTask {
                 entry.getValue().sendMessage(nums);
             }
         }
+    }
+
+    /**
+     * 每小时更新默认推荐列表
+     */
+    @Scheduled(cron = "0 0 */1 * * ?")
+    public void generateDefaultRecommendList(){
+        //删除之前的默认推荐列表
+        redisTemplate.delete("DEFAULT_RECOMMEND_LIST");
+        //通过最新的前十大热词生成最新的默认推荐列表
+        Set<Object> topKeyWords= redisTemplate.opsForZSet().reverseRange("KEYWORD_TOP_N",0,9);
+        for(Object keyword: topKeyWords){
+            redisTemplate.opsForZSet().unionAndStore("DEFAULT_RECOMMEND_LIST","KEYWORD:"+keyword,"Default_Recommend_List");
+        }
+    }
+    /**
+     * 每天衰减热词热度，和用户兴趣热度
+     * Attenuation heat
+     */
+    @Scheduled(cron = "0 0 0 */1 * ?")
+    public void attenuationHeat(){
+        //裁剪热词列表
+
+        //减低列表热词热度
+
+        //获取用户列表
+
+        //获取用户的兴趣列表
+
+        //裁剪用户兴趣列表
+
+        //对用户兴趣列表进行衰减
     }
 }

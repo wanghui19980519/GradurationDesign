@@ -5,25 +5,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 public class Comment {
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "commentId='" + commentId + '\'' +
-                ", commentContent='" + commentContent + '\'' +
-                ", publishTime=" + publishTime +
-                ", articleId='" + articleId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", senderNickname='" + senderNickname + '\'' +
-                ", senderAvatarPath='" + senderAvatarPath + '\'' +
-                ", receiverId='" + receiverId + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
+
 
     private String commentId;
 
     private String commentContent;
-    @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date publishTime;
 
     private String articleId;

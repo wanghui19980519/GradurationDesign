@@ -24,6 +24,6 @@ public class SpringMvcConfig implements WebMvcConfigurer {
                         "/article/selectArticleById", "/article/getCommentList",
                         "/comment/getReplyList","/type/getTypeList",
                         "/article/getTopNList","/article/getNewNList",
-                        "/cos/getCosSecret","/search","/getHotKeyWord");
+                        "/cos/getCosSecret","/search","/getHotKeyWord","/article/getDefaultRecommendList");
     }
 }

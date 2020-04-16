@@ -22,7 +22,7 @@ public class CommentCache {
         redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+comment.getReceiverId());
         //并且将评论通知加入其通知列表
         Message message=new Message(comment);
-        redisTemplate.opsForList().leftPush("NEW_COMMENT_MESSAGE:"+comment.getReceiverId(),message);
+        redisTemplate.opsForList().leftPush("NEW_COMMENT_MESSAGES:"+comment.getReceiverId(),message);
     }
 
     public List<Comment> getCommentList(String articleId) {

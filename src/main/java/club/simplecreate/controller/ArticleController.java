@@ -28,15 +28,34 @@ public class ArticleController {
     CommentService commentService;
     @Autowired
     ReplyService replyService;
+
+
     @ResponseBody
     @RequestMapping("/getTopNList")
-    public Map<String,Object> getTopNList(int page){
+    public Map<String,Object> getTopList(int page){
         return articleService.getTopNList(page);
     }
     @ResponseBody
     @RequestMapping("/getNewNList")
-    public Map<String,Object> getNewNList(int page){
+    public Map<String,Object> getNewList(int page){
         return articleService.getNewNList(page);
+    }
+    @ResponseBody
+    @RequestMapping("/getSpecialRecommendList")
+    public Map<String,Object> getSpecialRecommendList(HttpServletRequest request,int page){
+        String openId=(String)request.getAttribute("userId");
+        return articleService.getSpecialRecommendList(openId,page);
+    }
+    @ResponseBody
+    @RequestMapping("/setSpecialRecommendList")
+    public void setSpecialRecommendList(HttpServletRequest request){
+        String openId=(String)request.getAttribute("userId");
+        articleService.setSpecialRecommendList(openId);
+    }
+    @ResponseBody
+    @RequestMapping("/getDefaultRecommendList")
+    public Map<String,Object> getDefaultRecommendList(int page){
+        return articleService.getDefaultRecommendList(page);
     }
     @ResponseBody
     @RequestMapping("/insertArticle")
@@ -71,7 +90,7 @@ public class ArticleController {
     }
     @ResponseBody
     @RequestMapping("/selectArticleByIdForLoginUser")
-    public void aaa(HttpServletRequest request,String articleId){
+    public void selectArticleByIdForLoginUser(HttpServletRequest request,String articleId){
         //这是需要拦截的操作
         String openId=(String)request.getAttribute("userId");
         //将该文章的关键字列表加入用户的兴趣列表

@@ -1,6 +1,9 @@
 package club.simplecreate.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
+import java.util.Objects;
 
 public class Message {
 
@@ -13,10 +16,13 @@ public class Message {
     private String title;
 
     private String articleId;
-
+    @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date publishTime;
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(senderId, articleId, publishTime);
+    }
 
     public Message() {
 

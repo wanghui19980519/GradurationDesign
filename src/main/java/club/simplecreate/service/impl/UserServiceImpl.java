@@ -121,13 +121,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isFollow(String openId, String userId) {
-        return followCache.isFollow(openId,userId);
+    public boolean isFollow(String openId, String authorId) {
+        return followCache.isFollow(openId,authorId);
     }
 
     @Override
     public boolean follow(User user, String authorId) {
-
         return followCache.follow(user,authorId);
     }
 

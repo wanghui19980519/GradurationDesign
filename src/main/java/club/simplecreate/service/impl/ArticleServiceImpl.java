@@ -4,6 +4,7 @@ import club.simplecreate.cache.ArticleCache;
 import club.simplecreate.cache.UserCache;
 import club.simplecreate.dao.ArticleMapper;
 import club.simplecreate.pojo.Article;
+import club.simplecreate.recommender.BaseOnContent;
 import club.simplecreate.service.ArticleService;
 import club.simplecreate.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class ArticleServiceImpl implements ArticleService {
     UserCache userCache;
     @Autowired
     UserService userService;
-
+    @Autowired
+    BaseOnContent baseOnContent;
 
     @Override
     public boolean insertArticle(Article article) {
@@ -57,8 +59,6 @@ public class ArticleServiceImpl implements ArticleService {
         res.setAuthor(userService.selectUserById(res.getUserId()));
         //获得其访问量，评论数，点赞数
         res.setVisitNums(articleCache.getVisitNums(articleId));
-        //res.setCommentNums(articleCache.getCommentNums(articleId));
-        //res.setLikeNums(articleCache.getLikeNums(articleId));
         return res;
     }
 
@@ -136,6 +136,33 @@ public class ArticleServiceImpl implements ArticleService {
         List<Article> articles=getArticles(articleIds);
         res.put("rows",articles);
         return res;
+    }
+
+    @Override
+    public Map<String, Object> getSpecialRecommendList(String openId, int page) {
+        Map<String, Object> res=new HashMap<>(2);
+        long pages=getPages(articleCache.getSpecialRecommendListSize(openId));
+        res.put("totalPages",pages);
+        Set<Object> articleIds=articleCache.getSpecialRecommendList(openId,page);
+        List<Article> articles=getArticles(articleIds);
+        res.put("rows",articles);
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getDefaultRecommendList(int page) {
+        Map<String, Object> res=new HashMap<>(2);
+        Set<Object> articleIds=articleCache.getDefaultRecommendList(page);
+        List<Article> articles=getArticles(articleIds);
+        res.put("rows",articles);
+        long pages=getPages(articleCache.getDefaultRecommendListSize());
+        res.put("totalPages",pages);
+        return res;
+    }
+
+    @Override
+    public void setSpecialRecommendList(String openId) {
+        baseOnContent.setSpecialRecommend(openId);
     }
 
     private List<Article> getArticles(Collection<Object> articleRows){

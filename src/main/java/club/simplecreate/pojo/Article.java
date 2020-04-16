@@ -14,7 +14,7 @@ public class Article {
     private String summary;
 
     private String content;
-    @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm",timezone="GMT+8")
     private Date publishTime;
 
     private String containImgpath;

@@ -10,12 +10,11 @@ import org.springframework.stereotype.Component;
 public class FollowCache {
     @Autowired
     private RedisTemplate<Object,Object> redisTemplate;
-    public boolean isFollow(String openId, String userId) {
-        //判断作者的关注列表中是否存在该操作用户
-        //判断用户的收藏列表中是否存在该articleId
+    public boolean isFollow(String openId, String authorId) {
+        //判断操作用户的关注列表中是否存在该作者
         long res;
         try {
-             res=redisTemplate.opsForZSet().rank("FOLLOW_SET:" + openId, userId);
+             res=redisTemplate.opsForZSet().rank("FOLLOW_SET:" +openId,authorId);
         }catch (Exception e){
             return false;
         }
@@ -29,7 +28,7 @@ public class FollowCache {
         //判断该是否已关注
         if(isFollow(user.getOpenid(),authorId)){
             //已关注则取消关注
-            long res1=redisTemplate.opsForZSet().remove("FOLLOW_SET:"+authorId,user.getOpenid());
+            long res1=redisTemplate.opsForZSet().remove("FOLLOW_SET:"+user.getOpenid(),authorId);
             if(res1==1){
                 return true;
             }else{
@@ -39,7 +38,7 @@ public class FollowCache {
         else{
             //未关注
             //将该用户加入被关注用户的粉丝列表
-            boolean res2=redisTemplate.opsForZSet().add("FOLLOW_SET:"+authorId,user.getOpenid(),System.currentTimeMillis());
+            boolean res2=redisTemplate.opsForZSet().add("FOLLOW_SET:"+user.getOpenid(),authorId,System.currentTimeMillis());
             //关注信息加入信箱，未读消息加1
             if(res2){
                 redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
@@ -53,4 +52,6 @@ public class FollowCache {
         }
 
     }
+
+
 }

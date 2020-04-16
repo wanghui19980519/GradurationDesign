@@ -81,18 +81,12 @@ public class ArticleCache {
         return (Article)redisTemplate.opsForValue().get("ARTICLE:"+articleId);
     }
     public int getVisitNums(String articleId){
-        if(redisTemplate.hasKey("VISITNUMS:"+articleId)) {
-            return (int) redisTemplate.opsForValue().get("VISITNUMS:" + articleId);
+        if(redisTemplate.hasKey("VISIT_NUMS:"+articleId)) {
+            return (int) redisTemplate.opsForValue().get("VISIT_NUMS:" + articleId);
         }else{
-            redisTemplate.opsForValue().set("VISITNUMS:" + articleId,0);
+            redisTemplate.opsForValue().set("VISIT_NUMS:" + articleId,0);
             return 0;
         }
-    }
-    public long getCommentNums(String articleId){
-        return redisTemplate.opsForList().size("ARTICLE_COMMENTS:"+articleId);
-    }
-    public long getLikeNums(String articleId){
-        return redisTemplate.opsForSet().size("ARTICLE_LIKES:"+articleId);
     }
     @Async
     public void increaseScore(String articleId) {
@@ -113,5 +107,27 @@ public class ArticleCache {
 
     public List<Object> getNewNArticleList(int page) {
         return redisTemplate.opsForList().range("NEWN",(page-1)*6,page*6-1);
+    }
+
+    public Set<Object> getSpecialRecommendList(String openId, int page) {
+        return redisTemplate.opsForZSet().reverseRange("SPECIAL_RECOMMEND:"+openId,(page-1)*6,page*6-1);
+    }
+
+    public long getSpecialRecommendListSize(String openId) {
+        return redisTemplate.opsForZSet().size("SPECIAL_RECOMMEND:"+openId);
+    }
+
+    public Set<Object> getDefaultRecommendList(int page) {
+        if(!redisTemplate.hasKey("DEFAULT_RECOMMEND_LIST")){
+            Set<Object> topKeyWords= redisTemplate.opsForZSet().reverseRange("KEYWORD_TOP_N",0,9);
+            for(Object keyword: topKeyWords){
+                redisTemplate.opsForZSet().unionAndStore("DEFAULT_RECOMMEND_LIST","KEYWORD:"+keyword,"DEFAULT_RECOMMEND_LIST");
+            }
+        }
+        return redisTemplate.opsForZSet().reverseRange("DEFAULT_RECOMMEND_LIST",(page-1)*6,page*6-1);
+    }
+
+    public long getDefaultRecommendListSize() {
+        return redisTemplate.opsForZSet().size("DEFAULT_RECOMMEND_LIST");
     }
 }

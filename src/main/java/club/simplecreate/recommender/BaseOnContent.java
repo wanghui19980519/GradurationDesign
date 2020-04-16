@@ -1,9 +1,38 @@
 package club.simplecreate.recommender;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.stereotype.Component;
+
+import java.util.Set;
+@Component
 public class BaseOnContent {
-    //用户每看一篇文章将该片文章关键字加入用户兴趣列表
 
-    //利用用户兴趣列表中的关键字为用户生成推荐列表
+    @Autowired
+    private RedisTemplate<Object,Object> redisTemplate;
 
-    //
+    public void setSpecialRecommend(String openId) {
+        //删除之前的推荐列表
+        redisTemplate.delete("SPECIAL_RECOMMEND:"+openId);
+        //如果用户还未浏览任何文章，向他推荐默认文章
+        if(redisTemplate.opsForZSet().size("HOBBY:" + openId)>=10) {
+            Set<Object> topKeyWords= redisTemplate.opsForZSet().reverseRange("KEYWORD_TOP_N",0,9);
+            for(Object keyword: topKeyWords){
+                redisTemplate.opsForZSet().unionAndStore("SPECIAL_RECOMMEND:" + openId,"KEYWORD:"+keyword,"SPECIAL_RECOMMEND:" + openId);
+            }
+
+        }
+        //取出前10个兴趣关键字及权重
+        Set<ZSetOperations.TypedTuple<Object>> keywords= redisTemplate.opsForZSet().reverseRangeByScoreWithScores("HOBBY:" + openId, 0, 9);
+        for (ZSetOperations.TypedTuple<Object> keyword : keywords) {
+            //取出关键字前十的文章及权重
+            Set<ZSetOperations.TypedTuple<Object>> articles = redisTemplate.opsForZSet().reverseRangeByScoreWithScores("KEYWORD:" + keyword.getValue(), 0, 19);
+            //相乘的出文章相应权重
+            for (ZSetOperations.TypedTuple<Object> article : articles) {
+                redisTemplate.opsForZSet().incrementScore("SPECIAL_RECOMMEND:" + openId, article.getValue(), keyword.getScore() * article.getScore());
+            }
+        }
+    }
+
 }
