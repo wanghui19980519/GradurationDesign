@@ -46,8 +46,10 @@ public class WebSocket {
 
     @OnOpen
     public void OnOpen(Session session, @PathParam(value = "token") String token){
+
         this.session = session;
         String openid=tokenCache.getToken(token);
+
         //不存在则失败
         if(openid==null) {
             //返回错误信息

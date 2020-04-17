@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Controller
-@RequestMapping("message")
+@RequestMapping("/message")
 public class MessageController {
     @Autowired
     MessageService messageService;
@@ -38,22 +38,22 @@ public class MessageController {
 
     @ResponseBody
     @RequestMapping("/followMessageAllRead")
-    public void followMessageAllRead(HttpServletRequest request) {
+    public void followMessageAllRead(HttpServletRequest request,int num) {
         String openId = (String) request.getAttribute("userId");
-        messageService.followMessageAllRead(openId);
+        messageService.followMessageAllRead(openId,num);
     }
 
     @ResponseBody
     @RequestMapping("/commentMessageAllRead")
-    public void commentMessageAllRead(HttpServletRequest request) {
+    public void commentMessageAllRead(HttpServletRequest request,int num) {
         String openId = (String) request.getAttribute("userId");
-        messageService.commentMessageAllRead(openId);
+        messageService.commentMessageAllRead(openId,num);
     }
 
     @ResponseBody
     @RequestMapping("/likeMessageAllRead")
-    public void likeMessageAllRead(HttpServletRequest request) {
+    public void likeMessageAllRead(HttpServletRequest request,int num) {
         String openId = (String) request.getAttribute("userId");
-        messageService.likeMessageAllRead(openId);
+        messageService.likeMessageAllRead(openId,num);
     }
 }

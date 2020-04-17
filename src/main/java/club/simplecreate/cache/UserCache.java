@@ -3,7 +3,6 @@ package club.simplecreate.cache;
 import club.simplecreate.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 

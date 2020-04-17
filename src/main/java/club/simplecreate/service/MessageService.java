@@ -9,11 +9,11 @@ public interface MessageService {
 
     Map<String, Object> getLikeMessage(String openId);
 
-    void commentMessageAllRead(String openId);
+    void commentMessageAllRead(String openId,int num);
 
-    void likeMessageAllRead(String openId);
+    void likeMessageAllRead(String openId,int num);
 
-    void followMessageAllRead(String openId);
+    void followMessageAllRead(String openId,int num);
 
 
 

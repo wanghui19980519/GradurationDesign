@@ -59,6 +59,8 @@ public class ArticleServiceImpl implements ArticleService {
         res.setAuthor(userService.selectUserById(res.getUserId()));
         //获得其访问量，评论数，点赞数
         res.setVisitNums(articleCache.getVisitNums(articleId));
+        res.setCommentNums(articleCache.getCommentNums(articleId));
+        res.setLikeNums(articleCache.getLikeNums(articleId));
         return res;
     }
 

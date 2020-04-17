@@ -28,7 +28,6 @@ public class KeyWordSearch {
     @ResponseBody
     @RequestMapping("/search")
     public Map<String ,Object> getResult(String keyword, int page){
-        System.out.println(keyword);
         if(keyword==null){
             return null;
         }

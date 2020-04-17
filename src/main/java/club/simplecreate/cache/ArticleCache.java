@@ -112,7 +112,12 @@ public class ArticleCache {
     public Set<Object> getSpecialRecommendList(String openId, int page) {
         return redisTemplate.opsForZSet().reverseRange("SPECIAL_RECOMMEND:"+openId,(page-1)*6,page*6-1);
     }
-
+    public long getCommentNums(String articleId){
+        return redisTemplate.opsForList().size("ARTICLE_COMMENTS:"+articleId);
+    }
+    public long getLikeNums(String articleId){
+        return redisTemplate.opsForSet().size("ARTICLE_LIKES:"+articleId);
+    }
     public long getSpecialRecommendListSize(String openId) {
         return redisTemplate.opsForZSet().size("SPECIAL_RECOMMEND:"+openId);
     }

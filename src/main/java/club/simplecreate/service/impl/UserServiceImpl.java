@@ -53,15 +53,6 @@ public class UserServiceImpl implements UserService {
                 userCache.insertUser(userResultFromDb);
             }
         }
-//        else {
-//            //如果用户信息发生变化
-//            if(!userResultFromCache.equals(user)){
-//                //更新缓存
-//                userCache.insertUser(user);
-//                //更新数据库
-//                userMapper.updateUser(user);
-//            }
-//        }//生成token,加入redis key为token,value为用户openid,一小时后过期
         token=UUID.randomUUID().toString();
         tokenCache.setToken(token,openid);
         //返回token和用户更完整信息

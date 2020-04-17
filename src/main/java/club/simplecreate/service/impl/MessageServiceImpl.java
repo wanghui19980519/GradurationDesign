@@ -52,18 +52,18 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void commentMessageAllRead(String openId) {
-        messageCache.commentMessageAllRead(openId);
+    public void commentMessageAllRead(String openId,int num) {
+        messageCache.commentMessageAllRead(openId,num);
     }
 
     @Override
-    public void likeMessageAllRead(String openId) {
-        messageCache.likeMessageAllRead(openId);
+    public void likeMessageAllRead(String openId,int num) {
+        messageCache.likeMessageAllRead(openId,num);
     }
 
     @Override
-    public void followMessageAllRead(String openId) {
-        messageCache.followMessageAllRead(openId);
+    public void followMessageAllRead(String openId,int num) {
+        messageCache.followMessageAllRead(openId,num);
     }
 
 }

@@ -42,25 +42,29 @@ public class ScheduleTask {
         //通过最新的前十大热词生成最新的默认推荐列表
         Set<Object> topKeyWords= redisTemplate.opsForZSet().reverseRange("KEYWORD_TOP_N",0,9);
         for(Object keyword: topKeyWords){
-            redisTemplate.opsForZSet().unionAndStore("DEFAULT_RECOMMEND_LIST","KEYWORD:"+keyword,"Default_Recommend_List");
+            redisTemplate.opsForZSet().unionAndStore("DEFAULT_RECOMMEND_LIST","KEYWORD:"+keyword,"DEFAULT_RECOMMEND_LIST");
         }
     }
     /**
      * 每天衰减热词热度，和用户兴趣热度
      * Attenuation heat
      */
-    @Scheduled(cron = "0 0 0 */1 * ?")
-    public void attenuationHeat(){
-        //裁剪热词列表
+//    @Scheduled(cron = "0 0 0 */1 * ?")
+//    public void attenuationHeat(){
+//        //裁剪热词列表
+//
+//        //减低列表热词热度
+//
+//        //获取用户列表
+//
+//        //获取用户的兴趣列表
+//
+//        //裁剪用户兴趣列表
+//
+//        //对用户兴趣列表进行衰减
 
-        //减低列表热词热度
+           //裁剪用户历史记录
 
-        //获取用户列表
-
-        //获取用户的兴趣列表
-
-        //裁剪用户兴趣列表
-
-        //对用户兴趣列表进行衰减
-    }
+           //将redis中的需要保存的记录存起来
+//    }
 }
