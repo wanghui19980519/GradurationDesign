@@ -1,6 +1,7 @@
 package club.simplecreate.service.impl;
 
 import club.simplecreate.cache.MessageCache;
+import club.simplecreate.pojo.Message;
 import club.simplecreate.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,27 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void followMessageAllRead(String openId,int num) {
         messageCache.followMessageAllRead(openId,num);
+    }
+
+    @Override
+    public void clearNewMessageNums(String openId) {
+        messageCache.clearNewMessageNums(openId);
+    }
+
+
+    @Override
+    public void readFollowMessageByIndex(String openId,  int index) {
+        messageCache.readFollowMessageByIndex(openId,index);
+    }
+
+    @Override
+    public void readCommentMessageByIndex(String openId, int index) {
+        messageCache.readCommentMessageByIndex(openId,index);
+    }
+
+    @Override
+    public void readLikeMessageByIndex(String openId,  int index) {
+        messageCache.readLikeMessageByIndex(openId,index);
     }
 
 }

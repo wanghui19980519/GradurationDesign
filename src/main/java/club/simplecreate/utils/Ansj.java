@@ -16,12 +16,21 @@ public class Ansj {
     }
     };
     public static  Map<String,Double>  split(String title,String tag,String summary){
+        //词的总数
+        Integer count=0;
+        //关键字及其权重
         Map<String,Double> res=new HashMap<>();
-        split(title,res,10.0);
+        split(title,res,10.0,count);
         if(tag!=null) {
-            split(tag, res, 5.0);
+            split(tag, res, 5.0,count);
         }
-        split(summary,res,1.0);
+        split(summary,res,1.0,count);
+
+        for(Map.Entry<String, Double> entry: res.entrySet())
+        {
+            //计算词频
+            res.replace(entry.getKey(),entry.getValue()/count);
+        }
         return res;
     }
     public static  Set<String>  split(String str){
@@ -48,9 +57,8 @@ public class Ansj {
      *     //而语料库中出现“旅游”这个词的文本共有100个，
      *     //则”旅游”的“逆文档频率”（IDF）为log(10000 / 100)=2，则TF-IDF（旅游）=0.04。
      */
-    private static void split(String str,Map<String,Double> res,Double width){
+    private static void split(String str,Map<String,Double> res,Double width,Integer count){
         List<Term> terms =getTerms(str);
-        int count=0;
         for(Term term:terms) {
             //拿到词
             String word = term.getName();
@@ -66,12 +74,6 @@ public class Ansj {
                 }
             }
         }
-        for(Map.Entry<String, Double> entry: res.entrySet())
-        {
-            //计算词频
-            res.replace(entry.getKey(),entry.getValue()/count);
-        }
-
     }
     private static List<Term> getTerms(String str){
         Result result = ToAnalysis.parse(str);

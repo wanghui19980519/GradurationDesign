@@ -64,6 +64,7 @@ public class ArticleCache {
             long nums=redisTemplate.opsForZSet().zCard("KEYWORD:"+entry.getKey());
             //2.文档总数
             Integer articleCount= (Integer) redisTemplate.opsForValue().get("ARTICLE_COUNT");
+            
             double idf= Math.log10(articleCount/(nums+1));
             //加入该文章的关键字列表
             redisTemplate.opsForZSet().add("ARTICLE_KEYWORDS:"+article.getArticleId(),entry.getKey(),entry.getValue()*idf);

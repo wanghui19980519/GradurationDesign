@@ -1,25 +1,23 @@
 package club.simplecreate;
 
-import club.simplecreate.cache.CommentCache;
-import club.simplecreate.cache.UserCache;
 
-import club.simplecreate.pojo.Like;
+import club.simplecreate.pojo.Message;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import java.util.List;
+
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GraduationdesignApplicationTests {
-   @Autowired
-    UserCache userCache;
-    @Autowired
-    CommentCache commentCache;
-    @Test
-    void contextLoads() {
-
-    }
+  @Autowired
+ RedisTemplate<Object,Object> redisTemplate;
+ @Test
+ void contextLoads() {
+   Message res=(Message)redisTemplate.opsForList().index("NEW_FOLLOW_MESSAGES:oUFeq5faEpwmnRwtigXWPY7IxPJU",-3);
+  System.out.println(res.getSenderNickname());
+ }
 
 }

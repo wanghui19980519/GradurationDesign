@@ -1,5 +1,6 @@
 package club.simplecreate.service;
 
+
 import java.util.Map;
 
 public interface MessageService {
@@ -15,6 +16,11 @@ public interface MessageService {
 
     void followMessageAllRead(String openId,int num);
 
+    void clearNewMessageNums(String openId);
 
+    void readFollowMessageByIndex(String openId, int index);
 
+    void readCommentMessageByIndex(String openId, int index);
+
+    void readLikeMessageByIndex(String openId, int index);
 }

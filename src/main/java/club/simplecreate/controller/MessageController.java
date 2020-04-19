@@ -52,8 +52,41 @@ public class MessageController {
 
     @ResponseBody
     @RequestMapping("/likeMessageAllRead")
-    public void likeMessageAllRead(HttpServletRequest request,int num) {
+    public void likeMessageAllRead(HttpServletRequest request, int num) {
         String openId = (String) request.getAttribute("userId");
         messageService.likeMessageAllRead(openId,num);
     }
+    @ResponseBody
+    @RequestMapping("/clearNewMessageNums")
+    public void clearNewMessageNums(HttpServletRequest request) {
+        String openId = (String) request.getAttribute("userId");
+        messageService.clearNewMessageNums(openId);
+    }
+
+    //这三个功能存在问题,通过message对象不能直接删除
+    //通过index删除似乎高并发问题（就是在查看消息的同时有新的通知导致index错位）
+    // 《---》
+    // 解决办法，从后往前数，totalnums-index是不会变化的，就是该消息离最末尾消息的距离是不变的
+
+    @ResponseBody
+    @RequestMapping("/readFollowMessageByIndex")
+    public void readFollowMessageByIndex(HttpServletRequest request,  int index,int totalNums) {
+        String openId = (String) request.getAttribute("userId");
+        messageService.readFollowMessageByIndex(openId,index-totalNums);
+    }
+
+    @ResponseBody
+    @RequestMapping("/readCommentMessageByIndex")
+    public void readCommentMessageByIndex(HttpServletRequest request, int index,int totalNums) {
+        String openId = (String) request.getAttribute("userId");
+        messageService.readCommentMessageByIndex(openId,index-totalNums);
+    }
+
+    @ResponseBody
+    @RequestMapping("/readLikeMessageByIndex")
+    public void readLikeMessageByIndex(HttpServletRequest request,int index,int totalNums) {
+        String openId = (String) request.getAttribute("userId");
+        messageService.readLikeMessageByIndex(openId,index-totalNums);
+    }
+
 }

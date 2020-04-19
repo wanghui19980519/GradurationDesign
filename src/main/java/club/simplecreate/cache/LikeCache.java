@@ -20,14 +20,10 @@ public class LikeCache {
         long res;
         //判断该是否已点赞
         if(isLike(user.getOpenid(),articleId)){
-            //已关注则取消关注
             res=redisTemplate.opsForSet().remove("ARTICLE_LIKES:"+articleId,user.getOpenid());
         }
         else{
-            //未关注
-            //将该用户加入被关注用户的粉丝列表
             res=redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
-            //关注信息加入信箱，未读消息加1
             redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
             Message message=new Message(user,articleId,title);
             redisTemplate.opsForList().rightPush("NEW_LIKE_MESSAGES:"+authorId,message);

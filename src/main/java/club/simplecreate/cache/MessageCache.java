@@ -35,33 +35,75 @@ public class MessageCache {
         return redisTemplate.opsForList().range("NEW_LIKE_MESSAGES:"+openId,0,-1);
     }
 
+    /**
+     * 全部已读，并将消息加入已读列表
+     * @param openId
+     * @param num
+     */
     public void commentMessageAllRead(String openId,int num){
         long size=redisTemplate.opsForList().size("NEW_COMMENT_MESSAGES:"+openId);
         if(size-num==0){
-            redisTemplate.delete("NEW_COMMENT_MESSAGES:"+openId);
+            redisTemplate.rename("NEW_COMMENT_MESSAGES:"+openId,"OLD_LIKE_MESSAGES:"+openId);
         }else {
+            List<Object> res=redisTemplate.opsForList().range("NEW_COMMENT_MESSAGES:"+openId,size - num - 1,-1);
             redisTemplate.opsForList().trim("NEW_COMMENT_MESSAGES:" + openId, 0, size - num - 1);
+            redisTemplate.opsForList().leftPushAll("OLD_COMMENT_MESSAGES:"+openId,res);
         }
-        redisTemplate.opsForValue().decrement("NEW_MESSAGE_NUMS:"+openId,num);
     }
-
+    /**
+     * 全部已读，并将消息加入已读列表
+     * @param openId
+     * @param num
+     */
     public void likeMessageAllRead(String openId,int num){
         long size=redisTemplate.opsForList().size("NEW_LIKE_MESSAGES:"+openId);
         if(size-num==0){
-            redisTemplate.delete("NEW_LIKE_MESSAGES:"+openId);
+            redisTemplate.rename("NEW_LIKE_MESSAGES:"+openId,"OLD_LIKE_MESSAGES:"+openId);
         }else {
+            List<Object> res=redisTemplate.opsForList().range("NEW_LIKE_MESSAGES:"+openId,size - num - 1,-1);
             redisTemplate.opsForList().trim("NEW_LIKE_MESSAGES:" + openId, 0, size - num - 1);
+            redisTemplate.opsForList().leftPushAll("OLD_LIKE_MESSAGES:"+openId,res);
         }
-        redisTemplate.opsForValue().decrement("NEW_MESSAGE_NUMS:"+openId,num);
     }
-
+    /**
+     * 全部已读，并将消息加入已读列表
+     * @param openId
+     * @param num
+     */
     public void followMessageAllRead(String openId,int num){
         long size=redisTemplate.opsForList().size("NEW_FOLLOW_MESSAGES:"+openId);
         if(size-num==0){
-            redisTemplate.delete("NEW_FOLLOW_MESSAGES:"+openId);
+            redisTemplate.rename("NEW_FOLLOW_MESSAGES:"+openId,"OLD_FOLLOW_MESSAGES:"+openId);
         }else {
+            List<Object> res=redisTemplate.opsForList().range("NEW_FOLLOW_MESSAGES:"+openId,size - num - 1,-1);
             redisTemplate.opsForList().trim("NEW_FOLLOW_MESSAGES:" + openId, 0, size - num - 1);
+            redisTemplate.opsForList().leftPushAll("OLD_FOLLOW_MESSAGES:"+openId,res);
         }
-        redisTemplate.opsForValue().decrement("NEW_MESSAGE_NUMS:"+openId,num);
+    }
+
+    public void clearNewMessageNums(String openId){
+        redisTemplate.opsForValue().set("NEW_MESSAGE_NUMS:"+openId,0);
+    }
+    public void readFollowMessageByIndex(String openId,int index){
+        Object message =redisTemplate.opsForList().index("NEW_FOLLOW_MESSAGES:"+openId,index);
+        long res=redisTemplate.opsForList().remove("NEW_FOLLOW_MESSAGES:"+openId,1,message);
+        if(res==1){
+            redisTemplate.opsForList().leftPush("OLD_FOLLOW_MESSAGES:"+openId,message);
+        }
+    }
+    public void readCommentMessageByIndex(String openId, int index){
+        Object message =redisTemplate.opsForList().index("NEW_COMMENT_MESSAGES:"+openId,index);
+        long res=redisTemplate.opsForList().remove("NEW_COMMENT_MESSAGES:"+openId,1,message);
+        if(res==1){
+            redisTemplate.opsForList().leftPush("OLD_COMMENT_MESSAGES:"+openId,message);
+        }
+    }
+    public void readLikeMessageByIndex(String openId, int index){
+        Object message =redisTemplate.opsForList().index("NEW_LIKE_MESSAGES:"+openId,index);
+        long res= redisTemplate.opsForList().remove("NEW_LIKE_MESSAGES:"+openId,1,message);
+        if(res==1){
+            redisTemplate.opsForList().leftPush("OLD_LIKE_MESSAGES:"+openId,message);
+        }
+
     }
 }
