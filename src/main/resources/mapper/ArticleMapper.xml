@@ -19,4 +19,10 @@
    <select id="selectArticleById" parameterType="string" resultMap="BaseResultMap">
      select *from T_ARTICLE WHERE article_id=#{value}
    </select>
+    <select id="selectArticleBytime" resultMap="BaseResultMap">
+      select * from T_ARTICLE WHERE to_days(publish_time) = to_days('2020-04-19 00:00:00');
+    </select>
+  <select id="getAllArticleId" resultType="string">
+    select article_id from T_ARTICLE;
+  </select>
 </mapper>

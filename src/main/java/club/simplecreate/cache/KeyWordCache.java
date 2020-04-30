@@ -15,7 +15,9 @@ public class KeyWordCache {
     @Async
     public void increaseKeyWordScore(Set<String> keyWords){
         for(String keyWord:keyWords){
-            redisTemplate.opsForZSet().incrementScore("KEYWORD_TOP_N",keyWord,10);
+            if(redisTemplate.hasKey("KEYWORD:"+keyWord)){
+                redisTemplate.opsForZSet().incrementScore("KEYWORD_TOP_N",keyWord,10);
+            }
         }
     }
 }

@@ -3,6 +3,8 @@ package club.simplecreate.dao;
 
 import club.simplecreate.pojo.Article;
 
+import java.util.List;
+
 public interface ArticleMapper {
     /**
      * 插入文章
@@ -12,4 +14,8 @@ public interface ArticleMapper {
     int insertArticle(Article article);
 
     Article selectArticleById(String articleId);
+
+    List<Article> selectArticleBytime();
+
+    List<String> getAllArticleId();
 }

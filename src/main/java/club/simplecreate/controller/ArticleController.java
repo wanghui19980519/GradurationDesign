@@ -168,12 +168,12 @@ public class ArticleController {
     }
     @ResponseBody
     @RequestMapping("/like")
-    public boolean like(HttpServletRequest request,String authorId,String articleId,String title){
+    public void like(HttpServletRequest request,String authorId,String articleId,String title){
         //点赞
         //这是需要拦截的操作
         String openId=(String)request.getAttribute("userId");
         User user=userService.selectUserById(openId);
-        return userService.like(user,authorId,articleId,title);
+        userService.like(user,authorId,articleId,title);
     }
     @ResponseBody
     @RequestMapping("/favorite")

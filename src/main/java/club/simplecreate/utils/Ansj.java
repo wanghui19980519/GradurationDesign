@@ -17,14 +17,60 @@ public class Ansj {
     };
     public static  Map<String,Double>  split(String title,String tag,String summary){
         //词的总数
-        Integer count=0;
+        int count=0;
         //关键字及其权重
         Map<String,Double> res=new HashMap<>();
-        split(title,res,10.0,count);
-        if(tag!=null) {
-            split(tag, res, 5.0,count);
+        List<Term> terms =getTerms(title);
+        for(Term term:terms) {
+            //拿到词
+            String word = term.getName();
+            //拿到词性
+            String natureStr = term.getNatureStr();
+            if(expectedNature.contains(natureStr)) {
+                count++;//词的总数，用来计算词频
+                if(res.containsKey(word)) {
+                    res.put(word, res.get(word) + 10);
+                }
+                else {
+                    res.put(word, 10.0);
+                }
+            }
         }
-        split(summary,res,1.0,count);
+        if(tag!=null){
+            terms =getTerms(tag);
+            for(Term term:terms) {
+                //拿到词
+                String word = term.getName();
+                //拿到词性
+                String natureStr = term.getNatureStr();
+                if(expectedNature.contains(natureStr)) {
+                    count++;//词的总数，用来计算词频
+                    if(res.containsKey(word)) {
+                        res.put(word, res.get(word) + 5);
+                    }
+                    else {
+                        res.put(word, 5.0);
+                    }
+                }
+            }
+        }
+
+        terms =getTerms(summary);
+        for(Term term:terms) {
+            //拿到词
+            String word = term.getName();
+            //拿到词性
+            String natureStr = term.getNatureStr();
+            if(expectedNature.contains(natureStr)) {
+                count++;//词的总数，用来计算词频
+                if(res.containsKey(word)) {
+                    res.put(word, res.get(word) + 1);
+                }
+                else {
+                    res.put(word, 1.0);
+                }
+            }
+        }
 
         for(Map.Entry<String, Double> entry: res.entrySet())
         {
@@ -47,34 +93,30 @@ public class Ansj {
     }
 
     /**
-     * 带权重的分割
-     * @param str
-     * @param res
-     * @param width
      *     //自己实现tf-idf算法
      *     //假如某篇文本分词后有1000个词，”旅游”出现20次，
      *     //则”旅游”的”词频”（TF）为0.02。语料库共有10000个文本，
      *     //而语料库中出现“旅游”这个词的文本共有100个，
      *     //则”旅游”的“逆文档频率”（IDF）为log(10000 / 100)=2，则TF-IDF（旅游）=0.04。
      */
-    private static void split(String str,Map<String,Double> res,Double width,Integer count){
-        List<Term> terms =getTerms(str);
-        for(Term term:terms) {
-            //拿到词
-            String word = term.getName();
-            //拿到词性
-            String natureStr = term.getNatureStr();
-            if(expectedNature.contains(natureStr)) {
-                count++;//词的总数，用来计算词频
-                if(res.containsKey(word)) {
-                    res.put(word, res.get(word) + width);
-                }
-                else {
-                    res.put(word, width);
-                }
-            }
-        }
-    }
+//    private static void split(String str,Map<String,Double> res,Double width,Integer count){
+//        List<Term> terms =getTerms(str);
+//        for(Term term:terms) {
+//            //拿到词
+//            String word = term.getName();
+//            //拿到词性
+//            String natureStr = term.getNatureStr();
+//            if(expectedNature.contains(natureStr)) {
+//                count++;//词的总数，用来计算词频
+//                if(res.containsKey(word)) {
+//                    res.put(word, res.get(word) + width);
+//                }
+//                else {
+//                    res.put(word, width);
+//                }
+//            }
+//        }
+//    }
     private static List<Term> getTerms(String str){
         Result result = ToAnalysis.parse(str);
         //分词结果的一个封装，主要是一个List<Term>的terms

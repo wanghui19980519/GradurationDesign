@@ -25,4 +25,7 @@
     city=#{city}
     where openid=#{openid}
   </update>
+  <select id="getAllUserId" resultType="string">
+    select openid from T_USER;
+  </select>
 </mapper>

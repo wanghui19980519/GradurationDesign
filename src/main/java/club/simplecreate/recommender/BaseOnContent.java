@@ -22,6 +22,8 @@ public class BaseOnContent {
                 redisTemplate.opsForZSet().unionAndStore("SPECIAL_RECOMMEND:" + openId,"KEYWORD:"+keyword,"SPECIAL_RECOMMEND:" + openId);
             }
         }
+        //获得历史记录
+        Set<Object> historySet=redisTemplate.opsForZSet().range("HISTORY:"+openId,0,-1);
         //取出前20个兴趣关键字及权重
         Set<ZSetOperations.TypedTuple<Object>> keywords= redisTemplate.opsForZSet().reverseRangeByScoreWithScores("HOBBY:" + openId, 0, 19);
         for (ZSetOperations.TypedTuple<Object> keyword : keywords) {
@@ -29,8 +31,6 @@ public class BaseOnContent {
             Set<ZSetOperations.TypedTuple<Object>> articles = redisTemplate.opsForZSet().reverseRangeByScoreWithScores("KEYWORD:" + keyword.getValue(), 0, 19);
             //相乘的出文章相应权重
             for (ZSetOperations.TypedTuple<Object> article : articles) {
-                //获得历史记录
-                Set<Object> historySet=redisTemplate.opsForZSet().range("HISTORY:"+openId,0,-1);
                 //过滤已经看过的文章
                 if(!historySet.contains(article.getValue())) {
                     redisTemplate.opsForZSet().incrementScore("SPECIAL_RECOMMEND:" + openId, article.getValue(), keyword.getScore() * article.getScore());

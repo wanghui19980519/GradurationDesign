@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean like(User user, String authorId,String articleId, String title) {
+    public void like(User user, String authorId,String articleId, String title) {
 
-        return  likeCache.like(user,authorId,articleId,title);
+        likeCache.like(user,authorId,articleId,title);
     }
 
     @Override

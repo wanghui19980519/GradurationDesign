@@ -5,6 +5,7 @@ import club.simplecreate.cache.UserCache;
 import club.simplecreate.dao.ArticleMapper;
 import club.simplecreate.pojo.Article;
 import club.simplecreate.recommender.BaseOnContent;
+import club.simplecreate.recommender.UserCF;
 import club.simplecreate.service.ArticleService;
 import club.simplecreate.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class ArticleServiceImpl implements ArticleService {
     UserService userService;
     @Autowired
     BaseOnContent baseOnContent;
-
+    @Autowired
+    UserCF userCF;
     @Override
     public boolean insertArticle(Article article) {
         //然后加入数据库
@@ -164,7 +166,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void setSpecialRecommendList(String openId) {
+        //生成推荐列表
+        //基于内容的推荐算法
         baseOnContent.setSpecialRecommend(openId);
+        //基于用户的协同过滤推荐算法
+        userCF.setSpecialRecommend(openId);
     }
 
     private List<Article> getArticles(Collection<Object> articleRows){
@@ -173,8 +179,8 @@ public class ArticleServiceImpl implements ArticleService {
             Article temp=selectArticleById((String) articleId);
             if(temp!=null){
                 temp.setContent(null);
-            }
-            articles.add(temp);
+                articles.add(temp);
+            }//如果不在就删除一系列缓存中的该文章id
         }
         return articles;
     }

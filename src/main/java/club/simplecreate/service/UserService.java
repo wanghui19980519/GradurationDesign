@@ -24,7 +24,7 @@ public interface UserService {
 
     boolean follow(User user, String authorId);
 
-    boolean like(User user,String authorId, String articleId, String title);
+    void like(User user,String authorId, String articleId, String title);
 
     boolean favorite(String openId, String articleId);
 

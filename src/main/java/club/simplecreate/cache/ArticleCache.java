@@ -18,7 +18,6 @@ public class ArticleCache {
     private RedisTemplate<Object,Object> redisTemplate;
     @Async
     public void insertArticle(Article article){
-        //文章发表时间距3月1日小时数
         //文章总数加一
         redisTemplate.opsForValue().increment("ARTICLE_COUNT");
         //将该文章加入topN列表Zset
@@ -38,22 +37,30 @@ public class ArticleCache {
         redisTemplate.opsForZSet().add("USER_ARTICLES:"+article.getUserId(),article.getArticleId(),System.currentTimeMillis());
         //建立访问量缓存
         redisTemplate.opsForValue().set("VISIT_NUMS:"+article.getArticleId(),0);
-
     }
-    public void deleteArticle(Integer articleId,String userId,int typeId) {
+
+    public void deleteArticle(String articleId,String userId) {
         //删除该文章缓存
+        redisTemplate.opsForValue().decrement("ARTICLE_COUNT");
         redisTemplate.delete("ARTICLE:"+articleId);
-        //删除作者作品列表下该文章
-        redisTemplate.opsForZSet().remove("USER_ARTICLES:"+userId,articleId);
         //删除topN中该id
         redisTemplate.opsForZSet().remove("TOPN",articleId);
-        //将该文章从该类别列表Zset中删除
-        redisTemplate.opsForZSet().remove("TYPE_TOPN:"+typeId,articleId);
+        //删除为该文章建立的倒排索引
+        Set<Object> keywordSet=redisTemplate.opsForZSet().range("ARTICLE_KEYWORDS:"+articleId,0,-1);
+        for(Object keyword:keywordSet){
+            redisTemplate.opsForZSet().remove("KEYWORD:"+keyword,articleId);
+        }
+        //删除该文章的关键字字段
+        redisTemplate.delete("ARTICLE_KEYWORDS:"+articleId);
+        //删除该文章的点赞列表
+        redisTemplate.delete("ARTICLE_LIKES:"+articleId);
+        //删除该文章的评论列表
+        redisTemplate.delete("ARTICLE_COMMENTS:"+articleId);
+        //待解决：有人关注了这篇文章，存在问题删除不了
     }
     @Async
     public void keywordSearch(Article article) {
         //为该文章标题，标签,摘要进行分词，建立倒排索引Zset  关键字--->文章id score词频，
-
         //同时也将文章关键字存入文章缓存用于计算文章相似度
         Map<String,Double> word=Ansj.split(article.getTitle(),article.getTag(),article.getSummary());
         for(Map.Entry<String, Double> entry: word.entrySet())

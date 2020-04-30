@@ -58,14 +58,15 @@ public class KeyWordSearch {
     public Set<Object> getHotKeyWord(){
         return redisTemplate.opsForZSet().reverseRange("KEYWORD_TOP_N",0,9);
     }
+
     private List<Article> getArticles(Collection<Object> articleRows){
         List<Article> articles=new ArrayList<>();
         for(Object articleId:articleRows) {
             Article temp=articleService.selectArticleById((String) articleId);
             if(temp!=null){
                 temp.setContent(null);
+                articles.add(temp);
             }
-            articles.add(temp);
         }
         return articles;
     }

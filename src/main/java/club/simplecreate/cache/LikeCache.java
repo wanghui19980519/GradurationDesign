@@ -13,25 +13,21 @@ public class LikeCache {
 
     public boolean isLike(String openId, String articleId) {
         //判断文章的点赞列表中是否存在该openidId
-        return redisTemplate.opsForSet().isMember("ARTICLE_LIKES:"+articleId,openId);
+        return redisTemplate.opsForSet().isMember("USER_LIKE_ARTICLES:"+openId,articleId);
     }
 
-    public boolean like(User user, String authorId,String articleId, String title) {
-        long res;
+    public void like(User user, String authorId,String articleId, String title) {
         //判断该是否已点赞
         if(isLike(user.getOpenid(),articleId)){
-            res=redisTemplate.opsForSet().remove("ARTICLE_LIKES:"+articleId,user.getOpenid());
+            redisTemplate.opsForSet().remove("ARTICLE_LIKES:"+articleId,user.getOpenid());
+            redisTemplate.opsForSet().remove("USER_LIKE_ARTICLES:"+user.getOpenid(),articleId);
         }
         else{
-            res=redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
+            redisTemplate.opsForSet().add("ARTICLE_LIKES:"+articleId,user.getOpenid());
+            redisTemplate.opsForSet().add("USER_LIKE_ARTICLES:"+user.getOpenid(),articleId);
             redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
             Message message=new Message(user,articleId,title);
             redisTemplate.opsForList().rightPush("NEW_LIKE_MESSAGES:"+authorId,message);
-        }
-        if(res==1){
-            return true;
-        }else{
-            return false;
         }
     }
 }

@@ -3,6 +3,8 @@ package club.simplecreate.dao;
 import club.simplecreate.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     /**
@@ -16,4 +18,6 @@ public interface UserMapper {
     int insertUser(User user);
 
     void updateUser(User user);
+
+    List<String> getAllUserId();
 }
