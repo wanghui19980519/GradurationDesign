@@ -69,6 +69,12 @@ public class MessageController {
     // 解决办法，从后往前数，totalnums-index是不会变化的，就是该消息离最末尾消息的距离是不变的
 
     @ResponseBody
+    @RequestMapping("/getNewMessageNum")
+    public int getNewMessageNum(HttpServletRequest request){
+        String openId = (String) request.getAttribute("userId");
+        return messageService.getNewMessageNum(openId);
+    }
+    @ResponseBody
     @RequestMapping("/readFollowMessageByIndex")
     public void readFollowMessageByIndex(HttpServletRequest request,  int index,int totalNums) {
         String openId = (String) request.getAttribute("userId");

@@ -23,4 +23,6 @@ public interface MessageService {
     void readCommentMessageByIndex(String openId, int index);
 
     void readLikeMessageByIndex(String openId, int index);
+
+    int  getNewMessageNum(String openId);
 }

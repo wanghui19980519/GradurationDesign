@@ -1,5 +1,6 @@
 package club.simplecreate.cache;
 
+import club.simplecreate.controller.WebSocket;
 import club.simplecreate.pojo.Comment;
 import club.simplecreate.pojo.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CommentCache {
@@ -22,6 +24,11 @@ public class CommentCache {
         redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+comment.getReceiverId());
         //并且将评论通知加入其通知列表
         Message message=new Message(comment);
+        //判断用户是否在线，在线直接向其发送通知
+        Map<String, WebSocket> map = WebSocket.webSocketSet;
+        if(map.containsKey(comment.getReceiverId())){
+            map.get(comment.getReceiverId()).sendMessage(1);
+        }
         redisTemplate.opsForList().leftPush("NEW_COMMENT_MESSAGES:"+comment.getReceiverId(),message);
     }
 

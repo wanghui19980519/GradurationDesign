@@ -106,4 +106,11 @@ public class MessageCache {
         }
 
     }
+
+    public int getNewMessageNum(String openId) {
+        if(redisTemplate.hasKey("NEW_MESSAGE_NUMS:"+openId)){
+            return (int)redisTemplate.opsForValue().get("NEW_MESSAGE_NUMS:"+openId);
+        }
+        return 0;
+    }
 }

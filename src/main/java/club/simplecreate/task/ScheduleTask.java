@@ -22,18 +22,18 @@ public class ScheduleTask {
     /**
      * 每隔1分钟执行一次任务，循环为在线人数查看消息队列中有无新消息
      */
-    @Scheduled(cron = "0 */1 * * * ?")
-    public void sendMessage(){
-        Map<String, WebSocket> map = WebSocket.webSocketSet;
-        for(Map.Entry<String, WebSocket> entry:map.entrySet()){
-            //从redis中取出新消息数量
-            int nums=0;
-            if(redisTemplate.hasKey("NEW_MESSAGE_NUMS:"+entry.getKey())) {
-                nums = (int) redisTemplate.opsForValue().get("NEW_MESSAGE_NUMS:" + entry.getKey());
-            }
-                entry.getValue().sendMessage(nums);
-        }
-    }
+//    @Scheduled(cron = "0 */1 * * * ?")
+//    public void sendMessage(){
+//        Map<String, WebSocket> map = WebSocket.webSocketSet;
+//        for(Map.Entry<String, WebSocket> entry:map.entrySet()){
+//            //从redis中取出新消息数量
+//            int nums=0;
+//            if(redisTemplate.hasKey("NEW_MESSAGE_NUMS:"+entry.getKey())) {
+//                nums = (int) redisTemplate.opsForValue().get("NEW_MESSAGE_NUMS:" + entry.getKey());
+//            }
+//                entry.getValue().sendMessage(nums);
+//        }
+//    }
 
     /**
      * 每小时更新默认推荐列表
@@ -114,16 +114,16 @@ public class ScheduleTask {
         //利用缓存中用户点赞过的文章计算用户相似度
         for(int i=0;i<userIdList.size();i++){
             //获得用户1喜欢文章的数量
-            long length1=redisTemplate.opsForSet().size("USER_LIKE_ARTICLES:"+userIdList.get(i));
+            long length1=redisTemplate.opsForZSet().size("HISTORY:"+userIdList.get(i));
             for(int j=i+1;j<userIdList.size();j++){
-                //利用redis的有序集合的求交集，获得交集的长度即为俩个用户共同喜欢的文章数
-                long total=redisTemplate.opsForSet().intersectAndStore(
-                        "USER_LIKE_ARTICLES:"+userIdList.get(i),
-                        "USER_LIKE_ARTICLES:"+userIdList.get(j),
+                //利用redis的有序集合的求交集，获得交集的长度即为俩个用户共同浏览过的文章数
+                long total=redisTemplate.opsForZSet().intersectAndStore(
+                        "HISTORY:"+userIdList.get(i),
+                        "HISTORY:"+userIdList.get(j),
                         "temp:"+userIdList.get(i)+"+"+userIdList.get(j));
                 redisTemplate.delete("temp:"+userIdList.get(i)+"+"+userIdList.get(j));
                 //获得用户2喜欢的文章数量
-                long length2=redisTemplate.opsForSet().size("USER_LIKE_ARTICLES:"+userIdList.get(j));
+                long length2=redisTemplate.opsForZSet().size("HISTORY:"+userIdList.get(j));
                 //计算相似度，余弦公式(不带惩罚措施)
                 double similarity=0;
                 if(total!=0&&length1!=0&&length2!=0){

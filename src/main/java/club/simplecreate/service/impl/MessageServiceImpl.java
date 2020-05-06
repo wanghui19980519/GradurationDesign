@@ -88,4 +88,9 @@ public class MessageServiceImpl implements MessageService {
         messageCache.readLikeMessageByIndex(openId,index);
     }
 
+    @Override
+    public int getNewMessageNum(String openId) {
+        return messageCache.getNewMessageNum(openId);
+    }
+
 }

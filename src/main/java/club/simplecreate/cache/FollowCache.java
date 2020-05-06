@@ -1,10 +1,13 @@
 package club.simplecreate.cache;
 
+import club.simplecreate.controller.WebSocket;
 import club.simplecreate.pojo.Message;
 import club.simplecreate.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class FollowCache {
@@ -44,6 +47,11 @@ public class FollowCache {
                 redisTemplate.opsForValue().increment("NEW_MESSAGE_NUMS:"+authorId);
                 Message message=new Message(user);
                 redisTemplate.opsForList().rightPush("NEW_FOLLOW_MESSAGES:"+authorId,message);
+                //判断用户是否在线，在线直接向其发送通知
+                Map<String, WebSocket> map = WebSocket.webSocketSet;
+                if(map.containsKey(authorId)){
+                    map.get(authorId).sendMessage(1);
+                }
                 return true;
             }else {
                 return false;

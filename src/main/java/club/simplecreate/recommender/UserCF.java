@@ -18,7 +18,7 @@ public class UserCF {
         for(ZSetOperations.TypedTuple<Object> userIdAndSimilarity : userIdAndSimilaritys){
             if (userIdAndSimilarity.getScore()>0) {
                 //先获得该用户点赞文章列表
-                Set<Object> articleIds = redisTemplate.opsForSet().members("USER_LIKE_ARTICLES:" + userIdAndSimilarity.getValue());
+                Set<Object> articleIds = redisTemplate.opsForZSet().range("HISTORY:" + userIdAndSimilarity.getValue(),0,-1);
                 for (Object articleId : articleIds) {
                     if (!historySet.contains(articleId)) {
                         //加入推荐列表
