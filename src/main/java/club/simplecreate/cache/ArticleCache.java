@@ -37,6 +37,7 @@ public class ArticleCache {
         redisTemplate.opsForZSet().add("USER_ARTICLES:"+article.getUserId(),article.getArticleId(),System.currentTimeMillis());
         //建立访问量缓存
         redisTemplate.opsForValue().set("VISIT_NUMS:"+article.getArticleId(),0);
+
     }
 
     public void deleteArticle(String articleId,String userId) {
@@ -57,6 +58,9 @@ public class ArticleCache {
         //删除该文章的评论列表
         redisTemplate.delete("ARTICLE_COMMENTS:"+articleId);
         //待解决：有人关注了这篇文章，存在问题删除不了
+
+        //删除最新列表中文章
+        redisTemplate.opsForList().remove("NEWN",1,articleId);
     }
     @Async
     public void keywordSearch(Article article) {
@@ -66,12 +70,10 @@ public class ArticleCache {
         for(Map.Entry<String, Double> entry: word.entrySet())
         {
             //进行逆文档频率计算
-
             //1.包含该关键字的文档数
             long nums=redisTemplate.opsForZSet().zCard("KEYWORD:"+entry.getKey());
             //2.文档总数
             Integer articleCount= (Integer) redisTemplate.opsForValue().get("ARTICLE_COUNT");
-            
             double idf= Math.log10(articleCount/(nums+1));
             //加入该文章的关键字列表
             redisTemplate.opsForZSet().add("ARTICLE_KEYWORDS:"+article.getArticleId(),entry.getKey(),entry.getValue()*idf);

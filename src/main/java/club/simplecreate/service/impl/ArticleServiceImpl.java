@@ -167,10 +167,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void setSpecialRecommendList(String openId) {
         //生成推荐列表
-        //基于内容的推荐算法
-        baseOnContent.setSpecialRecommend(openId);
+
         //基于用户的协同过滤推荐算法
         userCF.setSpecialRecommend(openId);
+        //基于内容的推荐算法
+        baseOnContent.setSpecialRecommend(openId);
     }
 
     private List<Article> getArticles(Collection<Object> articleRows){
